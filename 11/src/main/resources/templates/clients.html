@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Bank</title>
+</head>
+<body>
+<p>Clients</p>
+<div id="tableContainer">
+...Loading
+</div>
+<p><a href="/">Back to main menu</a></p>
+</body>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+loadClients();
+}); //коли сторінка буде отримана з сервера - завантажимо клієнтів із сервера
+function loadClients() {
+const request = new XMLHttpRequest();// створення об'єкта XMLHttpRequest
+try {
+request.open('GET', 'http://localhost:8080/api/clients');//ініціюємо запит
+request.responseType = 'json'; //вказуємо у якаво форматі повинна бути //відповідь
+request.onreadystatechange = function () {//додаємо логіку на успішне //завершення запиту
+if (this.readyState == 4 && this.status == 200) {
+renderClients(this.response);
+}
+};
+request.send();//надсилаємо запит
+} catch (error) {
+renderError()
+}
+}
+function renderError() {
+const tableContainer = document.getElementById("tableContainer");
+tableContainer.innerText = "Something went wrong";
+}
+function renderClients(clients) {//функція, яка генерує таблицю з кліентами на основі даних, //які прийшли з сервера
+const tableContainer = document.getElementById("tableContainer");
+const table = document.createElement('table');
+table.attributes.border = 1;
+
+const header = document.createElement('tr');
+header.innerHTML = "<th>name</th> <th>id</th> <th> email </th> <th>balance</th> ";
+table.appendChild(header);
+
+for (let i = 0; i < clients.length; i++) {
+const client = clients[i];
+const row = document.createElement('tr');
+const nameColumn = document.createElement('td');
+nameColumn.innerText = client.name;
+const idColumn = document.createElement('td');
+idColumn.innerHTML = '<a href="/client?clientId=' + client.id + '">' + client.id + '</a>';
+const emailColumn = document.createElement('td');
+emailColumn.innerText = client.email;
+const moneyColumn = document.createElement('td');
+moneyColumn.innerText = client.userMoney;
+row.appendChild(nameColumn);
+row.appendChild(idColumn);
+row.appendChild(emailColumn);
+row.appendChild(moneyColumn);
+table.appendChild(row);
+}
+tableContainer.replaceWith(table);
+}
+</script>

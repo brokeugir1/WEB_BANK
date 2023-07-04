@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<title>Bank</title>
+</head>
+
+<body>
+	<p>Deposit Money</p>
+	<form id="clientForm">
+		<label for="clientId">Account id: </label> <input id="clientId"
+			type="number" /> <br /> <label for="amount">Amount:</label> <input
+			type="number" id="amount" name="amount" min="0" step="100" required><br>
+		<br> <label for="day">Day: </label> <input id="day" type="number" />
+		<br /> <label for="month">Month: </label> <input id="month"
+			type="number" /> <br /> <label for="year">Year: </label> <input
+			id="year" type="number" /> <br />
+	</form>
+	<button onclick="return depositMoney()">Deposit</button>
+	<p>
+		<a href="/clients">Back to clients</a>
+	</p>
+	<p>
+		<a href="/">Back to main menu</a>
+	</p>
+
+</body>
+
+<script>
+	function depositMoney() {
+		const http = new XMLHttpRequest();
+
+		const params = {
+			clientId : document.querySelector('#clientId').value,
+			amount : document.querySelector('#amount').value,
+			day : document.querySelector('#day').value,
+			month : document.querySelector('#month').value,
+			year : document.querySelector('#year').value
+
+		}
+
+		http.open("POST", "/api/clients/depositMoney");
+		http.onload = function() {
+			if (http.status != 200) {
+				alert(http.responseText);
+				return;
+			}
+
+			window.location.replace("/clients")
+		} // success case
+		http.onerror = function() {
+			alert(http.responseText);
+
+		}// failure case
+		http.setRequestHeader('Content-type', 'application/json');
+		http.send(JSON.stringify(params));
+
+	}
+</script>
